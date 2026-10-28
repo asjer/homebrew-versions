@@ -1,3 +1,4 @@
+# typed: strict
 # frozen_string_literal: true
 
 require "formulary"
@@ -26,12 +27,12 @@ assets = {
 assets.each do |(os, arch), (asset, checksum)|
   Homebrew::SimulateSystem.with(os:, arch:) do
     formula = Formulary.from_contents(
-      "herdr@0.9.3", formula_path, formula_path.read, tap: Tap.fetch("asjer/versions"),
+      "herdr@0.9.3", formula_path, formula_path.read, tap: Tap.fetch("asjer/versions")
     )
     expected_url = "https://github.com/herdrdev/herdr/releases/download/v0.9.3/herdr-#{asset}"
-    raise "Wrong version for #{os}/#{arch}" unless formula.version.to_s == "0.9.3"
-    raise "Wrong release asset for #{os}/#{arch}" unless formula.stable.url == expected_url
-    raise "Wrong checksum for #{os}/#{arch}" unless formula.stable.checksum.to_s == checksum
+    raise "Wrong version for #{os}/#{arch}" if formula.version.to_s != "0.9.3"
+    raise "Wrong release asset for #{os}/#{arch}" if formula.stable.url != expected_url
+    raise "Wrong checksum for #{os}/#{arch}" if formula.stable.checksum.to_s != checksum
     raise "Formula must remain keg-only" unless formula.keg_only?
     raise "Pinned formula must not offer HEAD" if formula.head
     raise "Unexpected dependency" unless formula.deps.empty?

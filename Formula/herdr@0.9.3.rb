@@ -1,7 +1,6 @@
 class HerdrAT093 < Formula
   desc "Agent multiplexer that lives in your terminal"
   homepage "https://herdr.dev"
-  version "0.9.3"
   license "Apache-2.0"
 
   livecheck do
