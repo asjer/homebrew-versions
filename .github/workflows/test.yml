@@ -1,0 +1,37 @@
+name: Test formula
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_ANALYTICS: "1"
+    steps:
+      - name: Set up Homebrew and check out this tap
+        uses: Homebrew/actions/setup-homebrew@ae72030040bc05e2d65c41c577092cb98bc0a27e # main
+        with:
+          stable: true
+      - name: Check style
+        run: brew style Formula/herdr@0.9.3.rb test/formula.rb
+      - name: Check platform selection
+        run: brew ruby test/formula.rb
+      - name: Audit formula
+        run: brew audit --strict --os=all --arch=all asjer/versions/herdr@0.9.3
+      - name: Install and test
+        run: |
+          brew install asjer/versions/herdr@0.9.3
+          brew test asjer/versions/herdr@0.9.3
